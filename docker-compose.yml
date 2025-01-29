@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  influxdb:
+    image: fyp-influxdb:latest
+    container_name: fyp-influxdb
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./influxdb/configuration/configuration:/etc/influxdb/
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup 
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=admin1234 
+      - DOCKER_INFLUXDB_INIT_ORG=my-org
+      - DOCKER_INFLUXDB_INIT_BUCKET=network-data 
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
+
+  telegraf:
+    image: fyp-telegraf:latest
+    container_name: fyp-telegraf
+    restart: unless-stopped
+    environment:
+      - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
+    ports:
+        - "57500:57500"
+        - "8080:8080"
+    volumes:
+      - ./telegraf/configuration/:/etc/telegraf/
+    depends_on:
+      - influxdb
+
+  grafana:
+    image: grafana/grafana
+    container_name: fyp-grafana
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/datasources.yml:/usr/share/grafana/conf/provisioning/datasources
+      - ./grafana/____:/usr/share/grafana/conf/____
+      - ./grafana/____:/usr/share/grafana/conf/____
+      - ./grafana/____:/usr/share/grafana/conf/____
+    depends_on:
+      - influxdb
+
+
+# from(bucket: "network_data")
+#   |> range(start: -1d)
