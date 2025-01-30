@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   influxdb:
     image: fyp-influxdb:latest
@@ -8,14 +6,14 @@ services:
     ports:
       - "8086:8086"
     volumes:
-      - ./influxdb/configuration/configuration:/etc/influxdb/
+      - ./influxdb/configuration/influxdb.conf:/etc/influxdb/influxdb.conf
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup 
       - DOCKER_INFLUXDB_INIT_USERNAME=admin
       - DOCKER_INFLUXDB_INIT_PASSWORD=admin1234 
       - DOCKER_INFLUXDB_INIT_ORG=my-org
       - DOCKER_INFLUXDB_INIT_BUCKET=network-data 
-      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_TOKEN}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$INFLUXDB_TOKEN
 
   telegraf:
     image: fyp-telegraf:latest
@@ -39,13 +37,12 @@ services:
       - '3000:3000'
     volumes:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/datasources.yml:/usr/share/grafana/conf/provisioning/datasources
-      - ./grafana/____:/usr/share/grafana/conf/____
-      - ./grafana/____:/usr/share/grafana/conf/____
-      - ./grafana/____:/usr/share/grafana/conf/____
+      - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yml
+      - ./grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
+      - ./grafana/dashboards/dashboard_dummy.json:/etc/grafana/provisioning/dashboards/dashboard_dummy.json
+      - ./grafana/dashboards/dashboard_network.json:/etc/grafana/provisioning/dashboards/dashboard_network.json
     depends_on:
       - influxdb
-
 
 # from(bucket: "network_data")
 #   |> range(start: -1d)
