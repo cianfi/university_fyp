@@ -12,3 +12,7 @@ To SSH onto the test router:
 
 To see all open ports locally to ensure ports from Docker are open:
     lsof -i -P
+
+To do basic see all in Flux:
+    from(bucket: "network_data")
+        |> range(start: -1d)
