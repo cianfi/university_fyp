@@ -33,16 +33,25 @@ services:
     image: grafana/grafana
     container_name: fyp-grafana
     restart: unless-stopped
+    environment:
+      - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
     ports:
       - '3000:3000'
     volumes:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - ./grafana/datasources.yml:/etc/grafana/provisioning/datasources/default.yml
       - ./grafana/dashboard.yml:/etc/grafana/provisioning/dashboards/dashboard.yml
-      - ./grafana/dashboards/dashboard_dummy.json:/etc/grafana/provisioning/dashboards/dashboard_dummy.json
-      - ./grafana/dashboards/dashboard_network.json:/etc/grafana/provisioning/dashboards/dashboard_network.json
+      - ./grafana/dashboards/router_1.json:/etc/grafana/provisioning/dashboards/router_1.json
+      - ./grafana/dashboards/router_2.json:/etc/grafana/provisioning/dashboards/router_2.json
     depends_on:
       - influxdb
+
+  # ollama:
+  #   image: X
+  #   container_name: fyp-ollama
+  #   restart: unless-stopped
+  #   ports:
+  #     - '11434:11434'
 
 # from(bucket: "network_data")
 #   |> range(start: -1d)

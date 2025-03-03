@@ -1,0 +1,8 @@
+{
+    "name": "router-2",
+    "ip_address": "20.20.30.3",
+    "port": 830,
+    "username": "netconf",
+    "password": "netconf",
+    "os": "iosxe"
+}
