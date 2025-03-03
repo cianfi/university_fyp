@@ -15,19 +15,17 @@ services:
       - DOCKER_INFLUXDB_INIT_BUCKET=network-data 
       - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=$INFLUXDB_TOKEN
 
-  telegraf:
-    image: fyp-telegraf:latest
+  telegraf: 
+    build: 
+      context: ./telegraf
+      args:
+        - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
     container_name: fyp-telegraf
-    restart: unless-stopped
-    environment:
-      - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
     ports:
-        - "57500:57500"
-        - "8080:8080"
-    volumes:
-      - ./telegraf/configuration/:/etc/telegraf/
-    depends_on:
-      - influxdb
+      - "57500:57500"
+      - "8080:8080"
+    # depends_on:
+    #   - influxdb
 
   grafana:
     image: grafana/grafana
