@@ -1,7 +1,19 @@
 FROM telegraf:latest
-WORKDIR /
 
-COPY configuration/telegraf.conf /etc/telegraf/
+COPY configuration/ /tmp/configuration/
+RUN mv /tmp/configuration/telegraf.conf /etc/telegraf/telegraf.conf \
+    && mv /tmp/configuration/stream_telem.conf /etc/telegraf/telegraf.d/stream_telem.conf \
+    && mv /tmp/configuration/netconf.conf /etc/telegraf/telegraf.d/netconf.conf \
+    && mv /tmp/configuration/device /etc/telegraf/ \
+    && mv /tmp/configuration/ncclient_telegraf.py /etc/telegraf/ \
+    && rm -rf /tmp/configuration
 
-EXPOSE 8080
-EXPOSE 57500
+RUN chmod +x /etc/telegraf/ncclient_telegraf.py
+
+RUN apt update && apt install python3 pip python3-venv -y
+RUN python3 -m venv venv
+ENV PATH="/venv/bin:$PATH"
+RUN pip install ncclient xmltodict
+
+ARG INFLUXDB_TOKEN
+ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
