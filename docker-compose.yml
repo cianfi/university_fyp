@@ -25,14 +25,14 @@ services:
     # depends_on:
     #   - influxdb
 
-  grafana:
-    build: 
-      context: ./grafana
-      args:
-        - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
-    container_name: fyp-grafana
-    ports:
-      - "3000:3000"
+  # grafana:
+  #   build: 
+  #     context: ./grafana
+  #     args:
+  #       - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
+  #   container_name: fyp-grafana
+  #   ports:
+  #     - "3000:3000"
 
   # ollama:
   #   image: X

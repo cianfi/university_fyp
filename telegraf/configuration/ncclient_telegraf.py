@@ -1,10 +1,10 @@
-from typing import Dict
 from ncclient import manager
 import xmltodict
 import json
 import dataclasses
 import argparse
 import logging
+import sys
 
 @dataclasses.dataclass
 class DeviceData:
@@ -91,12 +91,28 @@ def connecter(netconf_filter: str,  device: DeviceData) -> ReplyData:
         )
 
 
-def telegraf_format(device_reply: ReplyData) -> json:
-    return json.dumps(
+def telegraf_format(device_reply: ReplyData):
+    # return json.dumps(
+    #     [
+    #         {
+    #         "device_name": device_reply.device_name,
+    #         "data": device_reply.reply
+    #         }
+    #     ]
+    #     )
+    [
         {
-            "device_name": device_reply.device_name,
-            "data": device_reply.reply
-        })
+            "measurement": "interface_status",
+            "tags": {
+                "device_name": '',
+                "name": 'gigeter',
+            },
+            "fields": {
+                "admin_status": "up",
+                "oper_status": "up"
+            }
+        }
+    ]
     
 
 class NetconfFilter():
@@ -140,18 +156,21 @@ class NetconfFilter():
 
 
 def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s',
-        handlers=[
-            logging.FileHandler("./telegraf_netconf.log"),
-            # logging.StreamHandler() 
-        ]
-    )
+    # logging.basicConfig(
+    #     level=logging.INFO,
+    #     format='%(asctime)s - %(levelname)s - %(message)s',
+    #     handlers=[
+    #         logging.FileHandler("./telegraf_netconf.log"),
+    #         # logging.StreamHandler() 
+    #     ]
+    # )
 
     args = arg_parser()
     device_agent = connecter(device=args[0], netconf_filter=args[1])
-    telegraf_format(device_reply=device_agent)
+    end_result = telegraf_format(device_reply=device_agent)
+
+    print(end_result)
+    
 
 
 
