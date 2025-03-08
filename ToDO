@@ -1,0 +1,2 @@
+- Write code incase there is no info. Eg - Router using OSPF and not BGP, BGP needs to be skipped. 
+- Ensure the whole process from python container to grafana dashboard works
