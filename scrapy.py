@@ -20,7 +20,7 @@ def influx_client():
     from influxdb_client import InfluxDBClient, Point
     from influxdb_client.client.write_api import SYNCHRONOUS
     import os
-
+ 
     client = InfluxDBClient(url="http://127.0.0.1:8086", token=os.environ.get("INFLUXDB_TOKEN"), org="my-org")
     # write_api = client.write_api(write_options=SYNCHRONOUS)
 
