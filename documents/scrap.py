@@ -3,7 +3,24 @@ var = [{"device_name": "router-1", "data": {"interfaces-state": {"@xmlns": "urn:
 import json
 
 for square in var:
-    print(square["data"]["interfaces-state"])
+    data_list: list = []
+
+    for k, v in square["data"].items():
+        for interface in v["interface"]:
+            data_list.append({
+                "measurement": k,
+                "tags": {
+                    "device_name": square["device_name"],
+                    "interface_name": interface["name"],
+                },
+                "fields": {
+                    "admin_status": interface["admin-status"],
+                    "oper_status": interface["oper-status"]
+                },
+            })
+
+print(json.dumps(data_list, indent=4))
+
 
 
 

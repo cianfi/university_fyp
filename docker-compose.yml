@@ -13,26 +13,34 @@ services:
     ports:
       - "8086:8086"
 
-  telegraf: 
+  data_collector:
     build: 
-      context: ./telegraf
+      context: ./data_collecter
       args:
         - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
-    container_name: fyp-telegraf
-    ports:
-      - "57500:57500"
-      - "8080:8080"
+    container_name: fyp_data_data_collecter
+
+  # telegraf: 
+  #   build: 
+  #     context: ./telegraf
+  #     args:
+  #       - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
+  #   container_name: fyp-telegraf
+  #   ports:
+  #     - "57500:57500"
+  #     - "8080:8080"
+    
     # depends_on:
     #   - influxdb
 
-  # grafana:
-  #   build: 
-  #     context: ./grafana
-  #     args:
-  #       - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
-  #   container_name: fyp-grafana
-  #   ports:
-  #     - "3000:3000"
+  grafana:
+    build: 
+      context: ./grafana
+      args:
+        - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
+    container_name: fyp-grafana
+    ports:
+      - "3000:3000"
 
   # ollama:
   #   image: X

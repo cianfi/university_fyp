@@ -22,6 +22,7 @@ RUN python3 -m pip install --upgrade pip \
 FROM base as telegraf
 
 EXPOSE 57500
+EXPOSE 8080
 
 ARG INFLUXDB_TOKEN
 ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}

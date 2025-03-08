@@ -1,0 +1,15 @@
+FROM python:3.11-slim
+
+WORKDIR /
+
+COPY /code/ /tmp/
+
+RUN pip install -r tmp/requirements.txt
+
+RUN mv tmp/ncclient_telegraf.py /
+RUN mv tmp/device /
+
+ARG INFLUXDB_TOKEN
+ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
+
+CMD ["python", "ncclient_telegraf.py", "--device", "device/router-1.json", "--filter", "bgp_status"]
