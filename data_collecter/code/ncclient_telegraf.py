@@ -64,25 +64,30 @@ def arg_parser():
     parser.add_argument("--filter", type=str, required=False)
     
     args = parser.parse_args()
-
     if ".json" not in args.device:
         raise ValueError("Must be a '.json' file")
     else:
         device: DeviceData = device_details(device_file_path=args.device)
 
-    netconf_filter_dict: dict = {
-        "interface_status": NetconfFilter.interface_status(),
-        "interface_statistics": NetconfFilter.interface_statistics(),
-        "bgp_status": NetconfFilter.bgp_status(),
-        "ospf_status": NetconfFilter.ospf_status(),
-    }
+    if args.env == "local":
+        netconf_filter_dict: dict = {
+            "interface_status": NetconfFilter.interface_status(),
+            "interface_statistics": NetconfFilter.interface_statistics(),
+            "bgp_status": NetconfFilter.bgp_status(),
+            "ospf_status": NetconfFilter.ospf_status(),
+        }
+        if args.filter in netconf_filter_dict:
+            netconf_filter = netconf_filter_dict.get(args.filter)
+        else:
+            raise ValueError("Incorrect Filter")
 
-    if args.filter in netconf_filter_dict:
-        netconf_filter = netconf_filter_dict.get(args.filter)
-    else:
-        raise ValueError("Incorrect Filter")
+        return args.env, args.url, device , args.filter, netconf_filter
+
+    elif args.env == "container":
+        args.filter = None
+        netconf_filter = None
     
-    return args.env, args.url, device , args.filter, netconf_filter
+        return args.env, args.url, device, args.filter, netconf_filter
 
 
 def connecter(netconf_filter: str,  device: DeviceData) -> ReplyData:
@@ -101,10 +106,9 @@ def connecter(netconf_filter: str,  device: DeviceData) -> ReplyData:
     xml_to_dict = xmltodict.parse(netconf_rpc_reply)
     # This will check to see if nothing is returned. If nothing returned, issue with filter which will be flagged. 
     if xml_to_dict["rpc-reply"]["data"] == None:
-        logging.error(f"NO DATA RETURNED FROM DEVICE. NETCONF FILTER: {netconf_filter}")
         return ReplyData(
             device_name=device.name,
-            reply=f"No data was returned via this filter: {netconf_filter}"
+            reply=None
         )
     else:
         return ReplyData(
@@ -149,7 +153,7 @@ class InfluxDBFormatter():
 
     def bgp_status(self, device_data: DeviceData):
         telegraf_dict: list[dict] = []
-
+    
         for key,value in device_data.reply["bgp-state-data"]["neighbors"].items():
             telegraf_dict.append(
                 {
@@ -318,21 +322,29 @@ class ScriptType():
                 device=self.device, 
                 netconf_filter=netconf_dict[entry]["filter"],
                 )
-            netconf_dict[entry]["formatter"](device_agent)
+            if device_agent.reply != None:
+                netconf_dict[entry]["formatter"](device_agent)
+            else:
+                logging.info(f"Unsuccessful Response: No data for '{entry}'")
+                continue
 
         
     def local(self):
         device_data = connecter(device=self.device, netconf_filter=self.netconf_filter)
         Influx = InfluxDBFormatter(url=self.url)
 
+        if device_data.reply == None:
+            logging.info(f"Unsuccessful Response: No data for '{self.filter}'")
+            quit()
+
         if self.filter == "interface_status":
             Influx.interface_status(device_data)
         elif self.filter == "interface_statistics":
-            Influx.interface_statistics()
+            Influx.interface_statistics(device_data)
         elif self.filter == "bgp_status":
-            Influx.bgp_status()
+            Influx.bgp_status(device_data)
         elif self.filter == "ospf_status":
-            Influx.ospf_status()
+            Influx.ospf_status(device_data)
 
 
 def main():
