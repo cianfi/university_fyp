@@ -12,28 +12,8 @@ import logging
 import threading
 import requests
 import os
+from models import DeviceData, ReplyData, TelegrafFormat
 
-
-@dataclasses.dataclass
-class DeviceData:
-    name: str
-    ip_address: str
-    port: int
-    username: str
-    password: str
-    os: str
-
-@dataclasses.dataclass
-class ReplyData:
-    device_name: str
-    reply: dict
-
-
-@dataclasses.dataclass
-class TelegrafFormat:
-    measurement: str
-    tags: dict[str, str]
-    fields: dict[str, str]
 
 def device_details(device_file_path: str) -> DeviceData:
     with open(device_file_path, "r") as raw_device:
@@ -122,7 +102,7 @@ class InfluxDBFormatter():
         self.url = url
         self.Influx = InfluxDBConnect(url=url)
 
-    def interface_status(self, device_data: DeviceData):
+    def interface_status(self, device_data: ReplyData):
         for data in device_data.reply:
         
             telegraf_dict: list[dict] = []
@@ -146,12 +126,13 @@ class InfluxDBFormatter():
             if "Control Plane" in entry:
                 influxdb_line_protocol.remove(entry)
 
-        self.Influx.request_write(influxdb_line_protocol)
+        response = self.Influx.request_write(influxdb_line_protocol)
+        return response
 
-    def interface_statistics(self, device_data: DeviceData):
+    def interface_statistics(self, device_data: ReplyData):
         pass
 
-    def bgp_status(self, device_data: DeviceData):
+    def bgp_status(self, device_data: ReplyData):
         telegraf_dict: list[dict] = []
     
         for key,value in device_data.reply["bgp-state-data"]["neighbors"].items():
@@ -168,28 +149,56 @@ class InfluxDBFormatter():
                 }
             )
         influxdb_line_protocol: list[str] = self._line_protocol(telegraf_dict)
-        self.Influx.request_write(influxdb_line_protocol)
+        response = self.Influx.request_write(influxdb_line_protocol)
+        return response
 
-    def ospf_status(self, device_data: DeviceData):
-        telegraf_dict: list[dict] = []
+    def ospf_status(self, device_data: ReplyData):
+        ospf_state_types: list[str] = ["BDR", "DR", "Down"]
+        telegraf_list: list[dict] = []
 
-        short = device_data.reply["ospf-oper-data"]["ospf-state"]["ospf-instance"]["ospf-area"]["ospf-interface"]["ospf-neighbor"]
+        short = device_data.reply["ospf-oper-data"]["ospf-state"]["ospf-instance"]["ospf-area"]["ospf-interface"]
 
-        telegraf_dict.append(
-            {
-                "measurement": "ospf_status",
-                "tags": {
-                    "device_name": device_data.device_name,
-                    "neighbor_id": short["neighbor-id"]
-                },
-                "fields": {
-                    "ospf_state": short["state"]
-                }
-            }
-        )
+        if type(short) is list:
+            for interface in short:
+                if interface["state"] in ospf_state_types:
+                    telegraf_list.append(self._ospf_short(device_data.device_name, interface))
+                else:
+                    pass
 
-        influxdb_line_protocol: list[str] = self._line_protocol(telegraf_dict)
-        self.Influx.request_write(influxdb_line_protocol)
+        elif type(short) is dict:
+            telegraf_list.append(self._ospf_short(device_data.device_name, interface))
+
+        else:
+            raise ValueError("Please check OSPF")
+
+        influxdb_line_protocol: list[str] = self._line_protocol(telegraf_list)
+        response = self.Influx.request_write(influxdb_line_protocol)
+        return response
+
+    def _ospf_short(self, device_name, interface):
+            if 'ospf-neighbor' in interface:
+                return {
+                        "measurement": "ospf_status",
+                        "tags": {
+                            "device_name": device_name,
+                        },
+                        "fields": {
+                            "ospf_state": interface["ospf-neighbor"]["state"]
+                        }
+                    }
+                
+            elif 'state' in interface:
+                if interface['state'] == "Down":
+                    return {
+                            "measurement": "ospf_status",
+                            "tags": {
+                                "device_name": device_name,
+                            },
+                            "fields": {
+                                "ospf_state": "Down"
+                            }
+                        }
+                    
 
     def _line_protocol(self, telegraf_dict) -> list[str]:
         influxdb_line_protocol: list[str] = []
@@ -220,7 +229,7 @@ class InfluxDBConnect():
                 payload += f"{influxdb_line_protocol[counter]}"
             counter += 1
 
-        data = requests.request(
+        response = requests.request(
             method="POST",
             url=f"http://{self.url}:8086/api/v2/write",
             headers={
@@ -235,13 +244,7 @@ class InfluxDBConnect():
             data=payload,
             verify=False,
         )
-        self._response(data)
-
-    def _response(self,response):
-        if response.status_code < 200 or response.status_code >= 300:
-            logging.info(f"Unsuccessful response: {response.status_code}. Message {response.text}")
-        else:
-            logging.info(f"Successful Response: {response.status_code}")
+        return response
 
 
 class NetconfFilter():
@@ -303,10 +306,10 @@ class ScriptType():
                 "filter": NetconfFilter.interface_status(),
                 "formatter": Influx.interface_status,
             },
-            "interface_statistics": {
-                "filter": NetconfFilter.interface_statistics(),
-                "formatter": Influx.interface_statistics,
-            },
+            # "interface_statistics": {
+            #     "filter": NetconfFilter.interface_statistics(),
+            #     "formatter": Influx.interface_statistics,
+            # },
             "bgp_status": {
                 "filter": NetconfFilter.bgp_status(),
                 "formatter": Influx.bgp_status,
@@ -319,18 +322,18 @@ class ScriptType():
 
         for entry in netconf_dict:
             device_agent = connecter(
-                device=self.device, 
+                device=self.device,
                 netconf_filter=netconf_dict[entry]["filter"],
                 )
             if device_agent.reply != None:
-                netconf_dict[entry]["formatter"](device_agent)
+                response = netconf_dict[entry]["formatter"](device_agent)
+                self._response(response, entry)
             else:
-                logging.info(f"Unsuccessful Response: No data for '{entry}'")
+                logging.info(f"No data retrieved for '{entry}'")
                 continue
 
-        
     def local(self):
-        device_data = connecter(device=self.device, netconf_filter=self.netconf_filter)
+        device_data: ReplyData = connecter(device=self.device, netconf_filter=self.netconf_filter)
         Influx = InfluxDBFormatter(url=self.url)
 
         if device_data.reply == None:
@@ -345,6 +348,12 @@ class ScriptType():
             Influx.bgp_status(device_data)
         elif self.filter == "ospf_status":
             Influx.ospf_status(device_data)
+
+    def _response(self, response, entry: str):
+        if response.status_code < 200 or response.status_code >= 300:
+            logging.info(f"Unsuccessful response: {response.status_code}. Message {response.text}")
+        else:
+            logging.info(f"Successful Response for '{entry}': {response.status_code}")
 
 
 def main():
@@ -371,13 +380,13 @@ def main():
 
     if args[0] == "container":
         script.container()
-        logging.info(f"Done script. Waiting 45 seconds.")
+        logging.info(f"Done script. Waiting 30 seconds.")
     elif args[0] == "local":
         script.local()
-        logging.info(f"Done '{args[3]}'. Waiting 45 seconds.")
+        logging.info(f"Done '{args[3]}'. Waiting 30 seconds.")
 
     
-    threading.Timer(45, main).start()
+    threading.Timer(30, main).start()
 
 if __name__ == "__main__":
     main()

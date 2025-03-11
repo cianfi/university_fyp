@@ -12,4 +12,4 @@ RUN mv tmp/device /
 ARG INFLUXDB_TOKEN
 ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
 
-CMD ["python", "ncclient_telegraf.py", "--device", "device/router-1.json", "--filter", "bgp_status"]
+CMD ["python", "ncclient_telegraf.py", "--env", "container", "--url" ,"fyp-influxdb" , "--device", "device/router-1.json"]

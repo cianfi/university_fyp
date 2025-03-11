@@ -10,6 +10,8 @@ RUN mv /tmp/configuration/grafana.ini /etc/grafana/grafana.ini \
     && mv /tmp/configuration/datasources.yml /etc/grafana/provisioning/datasources/default.yml \
     && mv /tmp/configuration/dashboard.yml /etc/grafana/provisioning/dashboards/dashboard.yml \
     && mv /tmp/configuration/dashboards/ /etc/grafana/provisioning/dashboards/ \
+    && mv /tmp/configuration/contact_point.yml /etc/grafana/provisioning/alerting/contact_point.yml \
+    && mv /tmp/configuration/alert.yml /etc/grafana/provisioning/alerting/alert.yml \
     && rm -rf /tmp/configuration/
 
 EXPOSE 3000

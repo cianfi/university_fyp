@@ -1,0 +1,19 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: alert
+      receivers:
+        - uid: befij2nut2ygwa
+          type: webhook
+          settings:
+            httpMethod: POST
+            url: http://host.docker.internal:8000/alert
+          disableResolveMessage: false
+    - orgId: 1
+      name: email receiver
+      receivers:
+        - uid: ""
+          type: email
+          settings:
+            addresses: <example@email.com>
+          disableResolveMessage: false

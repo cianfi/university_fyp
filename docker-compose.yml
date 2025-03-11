@@ -1,4 +1,11 @@
 services:
+  data_collector:
+    build: 
+      context: ./data_collecter
+      args:
+        - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
+    container_name: fyp_data_data_collecter
+
   influxdb:
     build: 
       context: ./influxdb
@@ -13,26 +20,6 @@ services:
     ports:
       - "8086:8086"
 
-  data_collector:
-    build: 
-      context: ./data_collecter
-      args:
-        - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
-    container_name: fyp_data_data_collecter
-
-  # telegraf: 
-  #   build: 
-  #     context: ./telegraf
-  #     args:
-  #       - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
-  #   container_name: fyp-telegraf
-  #   ports:
-  #     - "57500:57500"
-  #     - "8080:8080"
-    
-    # depends_on:
-    #   - influxdb
-
   grafana:
     build: 
       context: ./grafana
@@ -42,9 +29,9 @@ services:
     ports:
       - "3000:3000"
 
-  # ollama:
-  #   image: X
-  #   container_name: fyp-ollama
-  #   restart: unless-stopped
-  #   ports:
-  #     - '11434:11434'
+  alert_api:
+    build: 
+      context: ./alert_api
+    container_name: fyp-alert_api
+    ports:
+      - "49000:49000"
