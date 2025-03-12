@@ -8,6 +8,7 @@ RUN pip install -r tmp/requirements.txt
 
 RUN mv tmp/ncclient_telegraf.py /
 RUN mv tmp/device /
+RUN mv tmp/models.py /
 
 ARG INFLUXDB_TOKEN
 ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}

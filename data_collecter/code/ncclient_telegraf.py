@@ -325,6 +325,12 @@ class ScriptType():
                 device=self.device,
                 netconf_filter=netconf_dict[entry]["filter"],
                 )
+            
+            if (entry == "ospf_status" and
+                "ospf-instance" not in device_agent.reply["ospf-oper-data"]["ospf-state"]):
+                logging.info(f"No data retrieved for 'ospf_status'")
+                continue
+
             if device_agent.reply != None:
                 response = netconf_dict[entry]["formatter"](device_agent)
                 self._response(response, entry)
@@ -332,13 +338,22 @@ class ScriptType():
                 logging.info(f"No data retrieved for '{entry}'")
                 continue
 
+
     def local(self):
         device_data: ReplyData = connecter(device=self.device, netconf_filter=self.netconf_filter)
         Influx = InfluxDBFormatter(url=self.url)
 
+
         if device_data.reply == None:
             logging.info(f"Unsuccessful Response: No data for '{self.filter}'")
             quit()
+        elif (
+            self.filter == "ospf_status" and 
+            "ospf-instance" not in device_data.reply["ospf-oper-data"]["ospf-state"]):
+                logging.info(f"Unsuccessful Response: No data for 'ospf_status'")
+                quit()
+        else:
+            pass
 
         if self.filter == "interface_status":
             Influx.interface_status(device_data)
@@ -380,13 +395,13 @@ def main():
 
     if args[0] == "container":
         script.container()
-        logging.info(f"Done script. Waiting 30 seconds.")
+        logging.info(f"Done script. Waiting 10 seconds.")
     elif args[0] == "local":
         script.local()
-        logging.info(f"Done '{args[3]}'. Waiting 30 seconds.")
+        logging.info(f"Done '{args[3]}'. Waiting 10 seconds.")
 
     
-    threading.Timer(30, main).start()
+    threading.Timer(10, main).start()
 
 if __name__ == "__main__":
     main()
