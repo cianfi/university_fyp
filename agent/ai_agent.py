@@ -3,7 +3,7 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.prompts import PromptTemplate
 
 from ai.llm import local_llm
-from ai.tools import BGPTools, Interface, OSPFTools
+from ai.tools import BGPTools, InterfaceTools, OSPFTools, ConfigTools
 from ai.models import LLMQuery, LLMResponse
 
 import argparse
@@ -11,7 +11,16 @@ import argparse
 class Agent:
     def __init__(self):
         self.tools = [
-            show_ip_interface,
+            BGPTools.show_bgp,
+            BGPTools.show_ip_bgp,
+            BGPTools.show_bgp_neighbors,
+            BGPTools.show_run_section_bgp,
+            BGPTools.show_bgp_summary,
+            InterfaceTools.show_ip_interface,
+            InterfaceTools.show_ip_interface_brief,
+            OSPFTools.show_ip_ospf,
+            OSPFTools.show_run_section_ospf,
+            ConfigTools.configuration,
         ]
 
         self.template = '''
@@ -56,6 +65,7 @@ class Agent:
     - show_bgp: Executes the 'show bgp' command on the network device and returns the parsed output.
     - show_ip_ospf: Executes the 'show ip ospf' command on the network device and returns the parsed output.
     - show_run_section_ospf: Executes the 'show run | section ospf' command on the network device and returns the parsed output.
+    - configuration: Configures the network device with the provided configuration and returns the parsed output.
 
     Begin!
     New input: {input}
@@ -63,7 +73,7 @@ class Agent:
     {agent_scratchpad}
     '''
         self.input_variables = ['input', 'agent_scratchpad'],
-        self.llm = local_llm()
+        self.llm = local_llm("llama3.1:8b")
 
     def alert(self, llm_message: LLMQuery):
         tool_description = render_text_description(self.tools)
@@ -76,8 +86,6 @@ class Agent:
             "tool_names": ", ".join([t.name for t in self.tools])
         }
         )
-        print(tool_description)
-        print(", ".join([t.name for t in self.tools]))
         agent = create_react_agent(llm=self.llm, prompt=prompt_template, tools=self.tools)
 
         agent_executor = AgentExecutor(
@@ -92,7 +100,6 @@ class Agent:
 
         return LLMResponse(input=response["input"], agent_scratchpad=response["agent_scratchpad"], output=response["output"])
 
-
     def _llm_invoke(self, agent_executor: AgentExecutor, llm_message: LLMQuery):
         """This is the function that will send the message to the llm"""
         return agent_executor.invoke(
@@ -102,34 +109,6 @@ class Agent:
             }
             )
 
-
-@tool
-def show_ip_interface(device: str) -> dict:
-    """
-    This function is used to run the 'show ip interface' command. 
-
-    Args:
-        device (str): The name of the network device. 
-    
-    Returns:
-        This returns data in a dictionary format. 
-        This tool will return EVERYTHING about each interface. For example everything from the MTU to the IP address.
-    """
-    return Interface.show_ip_interface(device=device)
-
-@tool  
-def show_ip_interface_brief(device: str) -> dict:
-    """
-    This function is used to run the 'show ip interface brief' command.
-
-    Args:
-        device (str): The name of the network device. 
-    
-    Returns:
-        This returns data in a dictionary format. 
-        This tool will return ip_address, interface_is_ok, method, status and protocol for each interface.
-    """
-    return Interface.show_ip_interface_brief(device=device)
 
 def main():
     parser = argparse.ArgumentParser(description='Run the AI Agent for Network Automation')

@@ -4,6 +4,8 @@ import logging
 from langchain_core.tools import tool
 from pyats.topology import loader
 
+from .models import ConfigurationFormat
+
 logging.getLogger("unicon").setLevel(logging.ERROR)
 logging.getLogger("genie").setLevel(logging.ERROR)
 
@@ -19,6 +21,9 @@ class BGP():
     
     def show_bgp(device: str):
         return BGP._show(device, "show bgp")
+    
+    def show_bgp_summary(device: str):
+        return BGP._show(device, "show bgp summary")
 
     def _show(device: str, command: str):
         testbed = loader.load("./network/testbed.yaml")
@@ -68,6 +73,20 @@ class Interface():
 
         return json.loads(json.dumps(parsed_output, indent=4))
 
+class Config():
+    def solution_configuration(device_name: str, configuration: str) -> dict:
+        return Config._configure(device_name, configuration)
+    
+    def _configure(device_name: str, configuration: str) -> dict:
+        testbed = loader.load("./network/testbed.yaml")
+
+        device = testbed.devices[device_name]
+        device.connect()
+
+        device.configure(configuration)
+        device.disconnect()
+
+        return {"status": "success"}
 
 class BGPTools():
     @tool
@@ -128,6 +147,20 @@ class BGPTools():
             str: The output from the device.
         """
         return BGP.show_bgp(device_name)
+    
+    @tool
+    def show_bgp_summary(device_name) -> str:
+        """
+        This function is used to run the 'show bgp summary' command which will show
+        a summary of the BGP configuration on the given network device.
+
+        Args:
+            device (str): The name of the network device.
+
+        Returns:
+            str: The output from the device.
+        """
+        return BGP.show_bgp_summary(device_name)
 
 class OSPFTools():
     @tool
@@ -168,3 +201,18 @@ class InterfaceTools():
             This tool will return EVERYTHING about each interface.
         """
         return Interface.show_ip_interface(device)
+    
+class ConfigTools():
+    @tool
+    def configuration(Configuration: ConfigurationFormat) -> dict:
+        """
+        This function is used to configure a network device with a given configuration.
+
+        Args:
+            device_name (str): The name of the network device. 
+            configuration (str): The configuration to apply to the network device.
+        
+        Returns:
+            dict: This will return a dictionary with the status of the configuration.
+        """
+        return Config.solution_configuration(Configuration.device, Configuration.configuration)
