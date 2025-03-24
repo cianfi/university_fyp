@@ -96,7 +96,7 @@ groups:
           annotations:
             __dashboardUid__: eee9jajpxup6ob
             __panelId__: "3"
-            description: There is an issue with BGP and its neighbour.
+            description: There is an issue with BGP for router-1 and its neighbour.
             summary: BGP Issue
           isPaused: false
           notification_settings:
