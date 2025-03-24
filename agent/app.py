@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Request
-import requests
-import json
-from models import LLMQuery, GrafanaMessage
+from fastapi import FastAPI
+from models import LLMQuery, GrafanaMessage, APILLMQuery
+from ai_agent import Agent
 
 api = FastAPI()
-
+chat_agent = Agent()
 
 @api.get("/")
 def read_root():
@@ -12,22 +11,10 @@ def read_root():
 
 
 @api.post("/llm")
-def llm(question: str):
-    response = requests.request(
-        "POST",
-        url="http://localhost:11434/api/generate",
-        data={
-            "model": "phi3:mini",
-            "prompt": f"{question}",
-            "stream":False
-        }
-    )
-    if response.status_code >= 200 and response.status_code > 300:
-        print(response.status_code)
-        print(response.text)
-    else:
-        print(f"Unsuccessful response from LLM. {response.status_code}")
-
+def llm(question: APILLMQuery):
+    llm_question = LLMQuery(question=question.question)
+    response = chat_agent.alert(llm_message=llm_question)
+    return response
 
 @api.post("/alert")
 async def alerts(payload: GrafanaMessage):

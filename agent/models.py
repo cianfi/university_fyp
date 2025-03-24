@@ -1,6 +1,11 @@
 from pydantic import BaseModel
+from dataclasses import dataclass
 
-class LLMQuery(BaseModel):
+@dataclass
+class LLMQuery():
+    question: str
+
+class APILLMQuery(BaseModel):
     question: str
 
 class PostTest(BaseModel):

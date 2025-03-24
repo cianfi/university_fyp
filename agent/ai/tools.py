@@ -16,9 +16,12 @@ class BGP():
     
     def show_bgp_neighbors(device: str):
         return BGP._show(device, "show bgp neighbors")
+    
+    def show_bgp(device: str):
+        return BGP._show(device, "show bgp")
 
     def _show(device: str, command: str):
-        testbed = loader.load("./llm/network/testbed.yaml")
+        testbed = loader.load("./network/testbed.yaml")
 
         device = testbed.devices[device]
         device.connect()
@@ -28,7 +31,6 @@ class BGP():
 
         return json.dumps(parsed_output, indent=4)
 
-
 class OSPF():
     def show_run_section_ospf(device: str) -> str:
         return OSPF._show(device, "show run | section ospf")
@@ -37,7 +39,7 @@ class OSPF():
         return OSPF._show(device, "show ip ospf")
 
     def _show(device: str, command: str) -> str:
-        testbed = loader.load("./llm/network/testbed.yaml")
+        testbed = loader.load("./network/testbed.yaml")
 
         device = testbed.devices[device]
         device.connect()
@@ -48,15 +50,15 @@ class OSPF():
         return json.dumps(parsed_output, indent=4)
 
 class Interface():
-    def show_ip_interface_brief(device: str) -> str:
+    def show_ip_interface_brief(device: str) -> dict:
         return Interface._show(device, "show ip interface brief")
     
-    def show_ip_interface(device: str) -> str:
+    def show_ip_interface(device: str) -> dict:
         return Interface._show(device, "show ip interface")
 
 
-    def _show(device: str, command: str) -> str:
-        testbed = loader.load("./llm/network/testbed.yaml")
+    def _show(device: str, command: str) -> dict:
+        testbed = loader.load("./network/testbed.yaml")
 
         device = testbed.devices[device]
         device.connect()
@@ -64,12 +66,12 @@ class Interface():
         parsed_output = device.parse(command)
         device.disconnect()
 
-        return json.dumps(parsed_output, indent=4)
+        return json.loads(json.dumps(parsed_output, indent=4))
 
 
 class BGPTools():
     @tool
-    def show_run_section_bgp(device: str) -> str:
+    def show_run_section_bgp(device_name) -> str:
         """
         This function is used to run the 'show run | section bgp' command which will provide
         all of the BGP configurations within the running configuration of the given network
@@ -81,10 +83,10 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_run_section_bgp(device)
+        return BGP.show_run_section_bgp(device_name)
 
     @tool
-    def show_ip_bgp(device: str) -> str:
+    def show_ip_bgp(device_name) -> str:
         """
         This function is used to run the 'show ip bgp' command which will show all the bgp 
         routes on the given network device. This is useful to see where the next hop is for 
@@ -96,10 +98,10 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_ip_bgp(device)
+        return BGP.show_ip_bgp(device_name)
     
     @tool
-    def show_bgp_neighbors(device: str) -> str:
+    def show_bgp_neighbors(device_name) -> str:
         """
         This function is used to run the 'show bgp neighbors' command which will show all
         the BGP neighbors connected to the given network device. This is useful to see 
@@ -111,8 +113,21 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_bgp_neighbors(device)
+        return BGP.show_bgp_neighbors(device_name)
+    
+    @tool
+    def show_bgp(device_name) -> str:
+        """
+        This function is used to run the 'show bgp' command which will show if
+        BGP is configured on the device.
 
+        Args:
+            device (str): The name of the network device. 
+        
+        Returns:
+            str: The output from the device.
+        """
+        return BGP.show_bgp(device_name)
 
 class OSPFTools():
     @tool
@@ -127,11 +142,29 @@ class OSPFTools():
     
 class InterfaceTools():
     @tool
-    def show_ip_interface_brief(device: str) -> str:
-        """TEST"""
+    def show_ip_interface_brief(device: str) -> dict:
+        """
+        This function is used to run the 'show ip interface brief' command.
+
+        Args:
+            device (str): The name of the network device. 
+        
+        Returns:
+            This returns data in a dictionary format. 
+            This tool will return ip_address, interface_is_ok, method, status and protocol for each interface.
+        """
         return Interface.show_ip_interface_brief(device)
     
     @tool
-    def show_ip_interface(device: str) -> str:
-        """TEST"""
+    def show_ip_interface(device: str) -> dict:
+        """
+        This function is used to run the 'show ip interface' command. 
+
+        Args:
+            device (str): The name of the network device. 
+        
+        Returns:
+            This returns data in a dictionary format. 
+            This tool will return EVERYTHING about each interface.
+        """
         return Interface.show_ip_interface(device)
