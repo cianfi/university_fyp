@@ -18,3 +18,8 @@ docker:
 	docker compose build 
 	docker compose up -d
 	@echo "Observation Stack has been built."
+
+api:
+	@echo "Building API..."
+	fastapi dev agent/app.py
+	@echo "API has been built."
