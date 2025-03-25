@@ -11,31 +11,29 @@ bgp_configuration: dict = {
         "no router ospf 1",
         "no router bgp 1",
         "router bgp 1",
-        "bgp router-id 100.100.100.1",
-        "bgp log-neighbor-changes",
-        "network 5.5.5.0 mask 255.255.255.0",
-        "network 6.6.6.0 mask 255.255.255.0",
-        "neighbor 100.100.100.2 remote-as 2",
+        ["router bgp 1", "bgp router-id 100.100.100.1"],
+        ["router bgp 1", "bgp log-neighbor-changes"],
+        ["router bgp 1", "network 5.5.5.0 mask 255.255.255.0"],
+        ["router bgp 1", "network 6.6.6.0 mask 255.255.255.0"],
+        ["router bgp 1", "neighbor 100.100.100.2 remote-as 2"],
     ],
     "router-2": [
         "no router ospf 1",
         "no router bgp 1",
-        "router bgp 2",
-        "bgp router-id 100.100.100.2",
-        "bgp log-neighbor-changes",
-        "network 7.7.7.0 mask 255.255.255.0",
-        "network 8.8.8.0 mask 255.255.255.0",
-        "neighbor 100.100.100.1 remote-as 1",
+        ["router bgp 2", "bgp router-id 100.100.100.2"],
+        ["router bgp 2", "bgp log-neighbor-changes"],
+        ["router bgp 2", "network 7.7.7.0 mask 255.255.255.0"],
+        ["router bgp 2", "network 8.8.8.0 mask 255.255.255.0"],
+        ["router bgp 2", "neighbor 100.100.100.1 remote-as 1"],
     ],
 }
 
 testbed = loader.load("./network/testbed.yaml")
-for device in bgp_configuration:
-    device = testbed.devices[device]
+for device_raw in bgp_configuration:
+    device = testbed.devices[device_raw]
     device.connect()
 
-    for command in bgp_configuration[device]:
-        device.parse(command)
+    for command in bgp_configuration[device_raw]:
+        device.configure(command)
     
     device.disconnect()
-
