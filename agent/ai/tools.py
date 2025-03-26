@@ -1,109 +1,14 @@
 import json
 import logging
+import ast
 
 from langchain_core.tools import tool
 from pyats.topology import loader
 
-from .models import ConfigurationFormat
-
 logging.getLogger("unicon").setLevel(logging.ERROR)
 logging.getLogger("genie").setLevel(logging.ERROR)
 
-class BGP():
-    def show_run_section_bgp(device: str):
-        return BGP._show(device, "show run | section bgp")
-
-    def show_ip_bgp(device: str):
-        return BGP._show(device, "show ip bgp")
-    
-    def show_bgp_neighbors(device: str):
-        return BGP._show(device, "show bgp neighbors")
-    
-    def show_bgp(device: str):
-        return BGP._show(device, "show bgp")
-    
-    def show_bgp_summary(device: str):
-        return BGP._show(device, "show bgp summary")
-
-    def _show(device: str, command: str):
-        testbed = loader.load("./network/testbed.yaml")
-
-        device = testbed.devices[device]
-        device.connect()
-
-        parsed_output = device.parse(command)
-        device.disconnect()
-
-        return json.dumps(parsed_output, indent=4)
-
-class OSPF():
-    def show_run_section_ospf(device: str) -> str:
-        return OSPF._show(device, "show run | section ospf")
-
-    def show_ip_ospf(device: str) -> str:
-        return OSPF._show(device, "show ip ospf")
-
-    def _show(device: str, command: str) -> str:
-        testbed = loader.load("./network/testbed.yaml")
-
-        device = testbed.devices[device]
-        device.connect()
-
-        parsed_output = device.parse(command)
-        device.disconnect()
-
-        return json.dumps(parsed_output, indent=4)
-
-class Interface():
-    def show_ip_interface_brief(device: str) -> dict:
-        return Interface._show(device, "show ip interface brief")
-    
-    def show_ip_interface(device: str) -> dict:
-        return Interface._show(device, "show ip interface")
-
-
-    def _show(device: str, command: str) -> dict:
-        testbed = loader.load("./network/testbed.yaml")
-
-        device = testbed.devices[device]
-        device.connect()
-
-        parsed_output = device.parse(command)
-        device.disconnect()
-
-        return json.loads(json.dumps(parsed_output, indent=4))
-
-class Config():
-    def solution_configuration(device_name: str, configuration: str) -> dict:
-        return Config._configure(device_name, configuration)
-    
-    def _configure(device_name: str, configuration: str) -> dict:
-        testbed = loader.load("./network/testbed.yaml")
-
-        device = testbed.devices[device_name]
-        device.connect()
-
-        device.configure(configuration)
-        device.disconnect()
-
-        return {"status": "success"}
-
-class BGPTools():
-    @tool
-    def show_run_section_bgp(device_name) -> str:
-        """
-        This function is used to run the 'show run | section bgp' command which will provide
-        all of the BGP configurations within the running configuration of the given network
-        device.
-
-        Args:
-            device (str): The name address of the network device. 
-        
-        Returns:
-            str: The output from the device.
-        """
-        return BGP.show_run_section_bgp(device_name)
-
+class ShowBGPTools():
     @tool
     def show_ip_bgp(device_name) -> str:
         """
@@ -117,7 +22,7 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_ip_bgp(device_name)
+        return show(device_name, "show ip bgp")
     
     @tool
     def show_bgp_neighbors(device_name) -> str:
@@ -132,7 +37,7 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_bgp_neighbors(device_name)
+        return show(device_name, "show bgp neighbors")
     
     @tool
     def show_bgp(device_name) -> str:
@@ -146,7 +51,7 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_bgp(device_name)
+        return show(device_name, "show bgp")
     
     @tool
     def show_bgp_summary(device_name) -> str:
@@ -160,20 +65,23 @@ class BGPTools():
         Returns:
             str: The output from the device.
         """
-        return BGP.show_bgp_summary(device_name)
+        return show(device_name, "show bgp summary")
 
-class OSPFTools():
-    @tool
-    def show_run_section_ospf(device: str) -> str:
-        """TEST"""
-        return OSPF.show_run_section_ospf(device)
-
+class ShowOSPFTools():
     @tool
     def show_ip_ospf(device: str) -> str:
-        """TEST"""
-        return OSPF.show_ip_ospf(device)
+        """
+        This function is used to run the 'show ip ospf' command.
+
+        Args:
+            device (str): The name of the network device.
+
+        Returns:
+            str: The output from the device.
+        """
+        return show(device, "show ip ospf")
     
-class InterfaceTools():
+class ShowInterfaceTools():
     @tool
     def show_ip_interface_brief(device: str) -> dict:
         """
@@ -186,7 +94,7 @@ class InterfaceTools():
             This returns data in a dictionary format. 
             This tool will return ip_address, interface_is_ok, method, status and protocol for each interface.
         """
-        return Interface.show_ip_interface_brief(device)
+        return show(device, "show ip interface brief")
     
     @tool
     def show_ip_interface(device: str) -> dict:
@@ -200,13 +108,33 @@ class InterfaceTools():
             This returns data in a dictionary format. 
             This tool will return EVERYTHING about each interface.
         """
-        return Interface.show_ip_interface(device)
+        return show(device, "show ip interface")
     
-class ConfigTools():
+class ShowConfigurationTools():
     @tool
-    def configuration(Configuration: ConfigurationFormat) -> dict:
+    def show_run(device: str) -> dict:
         """
-        This function is used to configure a network device with a given configuration.
+        This function is used to run the 'show running-config' command on the network device.
+
+        Args:
+            device (str): The name of the network device. 
+        
+        Returns:
+            dict: This will return the running configuration of the device.
+        """
+        return show(device, "show running-config")
+
+class ConfigureDeviceTools():
+    @tool
+    def configuration(configuration: str) -> dict:
+        """
+        This function is used to configure a network device, using PyATS, with the given configuration.
+
+        The format of configuration NEEDS to be a string which contains a dictionary.
+        The dictionary needs to contain a key which is the device name, and the value 
+        which is the configuration to apply to the device. Each command MUST be separated
+        by a newline character. For example:
+        '{"device": "command1\ncommand2\ncommand3..."}'
 
         Args:
             device_name (str): The name of the network device. 
@@ -215,4 +143,30 @@ class ConfigTools():
         Returns:
             dict: This will return a dictionary with the status of the configuration.
         """
-        return Config.solution_configuration(Configuration.device, Configuration.configuration)
+        return configure(ast.literal_eval(configuration))
+    
+def show(device: str, command: str) -> dict:
+    testbed = loader.load("./network/testbed.yaml")
+
+    device = testbed.devices[device]
+    device.connect()
+
+    parsed_output = device.parse(command)
+    device.disconnect()
+
+    return json.loads(json.dumps(parsed_output, indent=4))
+
+def configure(configuration: dict) -> dict:
+    testbed = loader.load("./network/testbed.yaml")
+
+    for k,v in configuration.items():
+        device = testbed.devices[k]
+        device.connect()
+
+        try:
+            device.configure(v.replace("\r", ""))
+            device.disconnect()
+        except Exception as e:
+            return {"status": "failed", "error": str(e)}
+
+    return {"status": "success"}
