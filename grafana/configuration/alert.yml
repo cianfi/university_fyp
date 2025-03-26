@@ -91,13 +91,14 @@ groups:
                 type: threshold
           dashboardUid: eee9jajpxup6ob
           panelId: 3
-          noDataState: NoData
-          execErrState: Error
+          noDataState: OK
+          execErrState: OK
           annotations:
             __dashboardUid__: eee9jajpxup6ob
             __panelId__: "3"
             description: There is an issue with BGP for router-1 and its neighbour.
             summary: BGP Issue
+          labels: {}
           isPaused: false
           notification_settings:
             receiver: alert
@@ -189,13 +190,14 @@ groups:
                 type: threshold
           dashboardUid: eee9jajpxup6ob3
           panelId: 4
-          noDataState: NoData
-          execErrState: Error
+          noDataState: OK
+          execErrState: OK
           annotations:
             __dashboardUid__: eee9jajpxup6ob3
             __panelId__: "4"
             description: There is an issue with ospf for router-1
             summary: OSPF Neighbour Down
+          labels: {}
           isPaused: false
           notification_settings:
             receiver: alert
