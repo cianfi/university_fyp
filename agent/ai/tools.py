@@ -126,7 +126,7 @@ class ShowConfigurationTools():
 
 class ConfigureDeviceTools():
     @tool
-    def configuration(configuration: str) -> dict:
+    def configuration(solution_configuration: str | dict) -> dict:
         """
         This function is used to configure a network device, using PyATS, with the given configuration.
 
@@ -134,7 +134,7 @@ class ConfigureDeviceTools():
         The dictionary needs to contain a key which is the device name, and the value 
         which is the configuration to apply to the device. Each command MUST be separated
         by a newline character. For example:
-        '{"device": "command1\ncommand2\ncommand3..."}'
+        '{"router-40": "command1\ncommand2\ncommand3..."}'
 
         Args:
             device_name (str): The name of the network device. 
@@ -143,7 +143,10 @@ class ConfigureDeviceTools():
         Returns:
             dict: This will return a dictionary with the status of the configuration.
         """
-        return configure(ast.literal_eval(configuration))
+        if isinstance(solution_configuration, dict):
+            return configure(solution_configuration)
+        else:
+            return configure(ast.literal_eval(solution_configuration))
     
 def show(device: str, command: str) -> dict:
     testbed = loader.load("./network/testbed.yaml")
@@ -158,7 +161,6 @@ def show(device: str, command: str) -> dict:
 
 def configure(configuration: dict) -> dict:
     testbed = loader.load("./network/testbed.yaml")
-
     for k,v in configuration.items():
         device = testbed.devices[k]
         device.connect()
