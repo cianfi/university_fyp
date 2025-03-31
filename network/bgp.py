@@ -22,7 +22,7 @@ bgp_configuration: dict = {
     ],
 }
 
-testbed = loader.load("./network/testbed.yaml")
+testbed = loader.load("./agent/ai/testbed.yaml")
 for device_raw in bgp_configuration:
     device = testbed.devices[device_raw]
     device.connect()

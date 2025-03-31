@@ -33,7 +33,7 @@ basic_configuration: dict = {
 }
 
 
-testbed = loader.load("./network/testbed.yaml")
+testbed = loader.load("./agent/ai/testbed.yaml")
 for device in basic_configuration:
     device = testbed.devices[device]
     device.connect()
