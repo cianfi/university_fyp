@@ -10,9 +10,9 @@ Once the Minimal Viable Product (MVP) is complete, there will be a test of multp
 
 ## Future Ideas for this project. 
 As an engineer, there are many routes I want to explore once I have built out a minimal viable product. The first is the use of different LLMs and seeing the results. The second is using other types of artificial intelligence, such as the following:
-    - Graphical Neural Networks (GNN).
-    - LLM and Retrieval-Augmented Generation (RAG).
-    - Fine Tuning.
+- Graphical Neural Networks (GNN).
+- LLM and Retrieval-Augmented Generation (RAG).
+- Fine Tuning.
 
 
 ## Documentation
@@ -25,6 +25,11 @@ All the documentation will be put into the documents folder. Here is a brief exp
 
 ## How to use
 For this project, you will need to do the following steps.
+
+If you just want to use the AI part of it with your chosen LLM, use the following commands:
+```bash
+python3 agent/ai_agent.py --question "What is the time?"
+```
 
 Note - you will need to change the testbed data in "agent/ai/testbed" and "data_collecter/code/device/*" to your specific needs.
 
@@ -60,6 +65,13 @@ make default
 make ospf/bgp #OSPF or BGP
 ```
 This will configure the two network devices with the basic configuration that was used for this project on two network devices.
+
+### Step 6 - Cause an issue!
+```bash
+router bgp 1
+neighbor 100.100.100.2 shutdown
+```
+If connectivity between devices work and grafana works, break the network!
 
 ### NOTE
 This project was tested on by the below commands on router-1. Depending on what LLM model you use, will differ the result you get on analyzation of issue and configuration of solution. Qwen2.5:14b worked seamlessly for this project.
