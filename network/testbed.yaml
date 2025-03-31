@@ -23,8 +23,8 @@ devices:
     platform: ""
     credentials:
       default:
-        username: admin
-        password: admin
+        username: netconf
+        password: netconf
     connections:
       cli:
         protocol: ssh
@@ -39,8 +39,8 @@ devices:
     platform: ""
     credentials:
       default:
-        username: admin
-        password: admin
+        username: netconf
+        password: netconf
     connections:
       cli:
         protocol: ssh
