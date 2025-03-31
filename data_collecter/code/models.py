@@ -14,9 +14,10 @@ class ReplyData:
     device_name: str
     reply: dict
 
-
 @dataclasses.dataclass
-class TelegrafFormat:
-    measurement: str
-    tags: dict[str, str]
-    fields: dict[str, str]
+class ScriptArgs:
+    env: str
+    url: str
+    device: str
+    filter: str
+    netconf_filter: str

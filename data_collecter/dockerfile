@@ -1,16 +1,12 @@
-FROM python:3.11-slim
+FROM python:3.11-alpine
 
-WORKDIR /
+WORKDIR /app
 
-COPY /code/ /tmp/
+COPY /code/ /app/
 
-RUN pip install -r tmp/requirements.txt
-
-RUN mv tmp/ncclient_telegraf.py /
-RUN mv tmp/device /
-RUN mv tmp/models.py /
+RUN pip install --no-cache-dir -r requirements.txt
 
 ARG INFLUXDB_TOKEN
 ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
 
-CMD ["python", "ncclient_telegraf.py", "--env", "container", "--url" ,"fyp-influxdb" , "--device", "device/router-1.json"]
+ENTRYPOINT ["python", "ncclient_telegraf.py", "--env", "container", "--url" ,"fyp-influxdb" , "--device", "device/router-1.json"]
