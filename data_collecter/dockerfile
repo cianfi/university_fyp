@@ -9,4 +9,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 ARG INFLUXDB_TOKEN
 ENV INFLUXDB_TOKEN=${INFLUXDB_TOKEN}
 
-ENTRYPOINT ["python", "ncclient_telegraf.py", "--env", "container", "--url" ,"fyp-influxdb" , "--device", "device/router-1.json"]
+ENTRYPOINT ["python", "app.py", "--env", "container", "--url" ,"fyp-influxdb" , "--device", "device/router-1.json"]
