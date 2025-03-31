@@ -40,20 +40,6 @@ class ShowBGPTools():
         return show(device_name, "show bgp neighbors")
     
     @tool
-    def show_bgp(device_name) -> str:
-        """
-        This function is used to run the 'show bgp' command which will show if
-        BGP is configured on the device.
-
-        Args:
-            device (str): The name of the network device. 
-        
-        Returns:
-            str: The output from the device.
-        """
-        return show(device_name, "show bgp")
-    
-    @tool
     def show_bgp_summary(device_name) -> str:
         """
         This function is used to run the 'show bgp summary' command which will show
@@ -126,7 +112,7 @@ class ShowConfigurationTools():
 
 class ConfigureDeviceTools():
     @tool
-    def configuration(solution_configuration: str | dict) -> dict:
+    def configuration(solution_configuration: str) -> dict:
         """
         This function is used to configure a network device, using PyATS, with the given configuration.
 
@@ -134,22 +120,29 @@ class ConfigureDeviceTools():
         The dictionary needs to contain a key which is the device name, and the value 
         which is the configuration to apply to the device. Each command MUST be separated
         by a newline character. For example:
-        '{"router-40": "command1\ncommand2\ncommand3..."}'
+        {"router-40": "command1\ncommand2\ncommand3..."}
 
         Args:
-            device_name (str): The name of the network device. 
-            configuration (str): The configuration to apply to the network device.
+            solution_configuration (str): The device name and configuration to apply to the device.
         
         Returns:
             dict: This will return a dictionary with the status of the configuration.
         """
-        if isinstance(solution_configuration, dict):
-            return configure(solution_configuration)
-        else:
-            return configure(ast.literal_eval(solution_configuration))
+        # Check if the input is a string and convert it to a dictionary
+        if isinstance(solution_configuration, str):
+            try:
+                solution_configuration = ast.literal_eval(solution_configuration)
+                if not isinstance(solution_configuration, dict):
+                    raise ValueError("Parsed configuration is not a dictionary.")
+            except (ValueError, SyntaxError) as e:
+                return {"status": "failed", "error": f"Invalid configuration format: {str(e)}"}
+
+        # Call the configure function with the parsed dictionary
+        return configure(configuration=solution_configuration)
+    
     
 def show(device: str, command: str) -> dict:
-    testbed = loader.load("./network/testbed.yaml")
+    testbed = loader.load("testbed.yaml")
 
     device = testbed.devices[device]
     device.connect()
@@ -160,13 +153,13 @@ def show(device: str, command: str) -> dict:
     return json.loads(json.dumps(parsed_output, indent=4))
 
 def configure(configuration: dict) -> dict:
-    testbed = loader.load("./network/testbed.yaml")
+    testbed = loader.load("testbed.yaml")
     for k,v in configuration.items():
         device = testbed.devices[k]
         device.connect()
-
+        v.replace("\r", "")
         try:
-            device.configure(v.replace("\r", ""))
+            device.configure(v)
             device.disconnect()
         except Exception as e:
             return {"status": "failed", "error": str(e)}

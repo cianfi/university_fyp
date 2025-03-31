@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from models import LLMQuery, GrafanaMessage, APILLMQuery
-from ai_agent import Agent
+from agent.models import LLMQuery, GrafanaMessage, APILLMQuery
+from agent.ai_agent import Agent
 
 from datetime import datetime
 

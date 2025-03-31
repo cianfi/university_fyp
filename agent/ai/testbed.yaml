@@ -1,0 +1,66 @@
+---
+devices:
+  # R1-changed:
+  #   alias: "Sandbox Router"
+  #   type: "router"
+  #   os: "iosxe"
+  #   platform: CSR1kv
+  #   credentials:
+  #     default:
+  #       username: admin
+  #       password: C1sco12345
+  #   connections:
+  #     cli:
+  #       protocol: ssh
+  #       ip: devnetsandboxiosxe.cisco.com
+  #       port: 22
+  #       arguments:
+  #         connection_timeout: 360
+  router-1:
+    alias: "Router 1"
+    type: "router"
+    os: "iosxe"
+    platform: ""
+    credentials:
+      default:
+        username: netconf
+        password: netconf
+    connections:
+      cli:
+        protocol: ssh
+        ip: 20.20.30.2
+        port: 22
+        arguements:
+          connection_timeout: 360
+  router-2:
+    alias: "Router 2"
+    type: "router"
+    os: "iosxe"
+    platform: ""
+    credentials:
+      default:
+        username: netconf
+        password: netconf
+    connections:
+      cli:
+        protocol: ssh
+        ip: 20.20.30.3
+        port: 22
+        arguements:
+          connection_timeout: 360
+  # cian-router-1:
+  #   alias: "Cians Router 1"
+  #   type: "router"
+  #   os: "iosxe"
+  #   platform: ""
+  #   credentials:
+  #     default:
+  #       username: admin
+  #       password: admin
+  #   connections:
+  #     cli:
+  #       protocol: ssh
+  #       ip: 10.10.10.1
+  #       port: 22
+  #       arguements:
+  #         connection_timeout: 360
