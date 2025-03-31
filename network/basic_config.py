@@ -1,4 +1,3 @@
-import json
 import logging
 
 from pyats.topology import loader
@@ -43,4 +42,3 @@ for device in basic_configuration:
         device.parse(command)
     
     device.disconnect()
-
