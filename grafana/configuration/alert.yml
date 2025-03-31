@@ -195,7 +195,7 @@ groups:
           annotations:
             __dashboardUid__: eee9jajpxup6ob3
             __panelId__: "4"
-            description: There is an issue with ospf for router-1
+            description: There is an issue with OSPF for router-1 and its neighbour
             summary: OSPF Neighbour Down
           labels: {}
           isPaused: false
