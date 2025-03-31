@@ -172,3 +172,6 @@ cython_debug/
 .pypirc
 scrapy.py
 scripts/
+documentation/note_pad.md
+old.drawio
+oldnotes.md

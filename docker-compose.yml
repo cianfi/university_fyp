@@ -19,7 +19,7 @@ services:
     container_name: fyp-influxdb
     ports:
       - "8086:8086"
-
+      
   grafana:
     build: 
       context: ./grafana
@@ -27,4 +27,4 @@ services:
         - INFLUXDB_TOKEN=$INFLUXDB_TOKEN
     container_name: fyp-grafana
     ports:
-      - "3000:3000"
+      - "3000:3000" 
