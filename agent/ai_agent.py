@@ -8,6 +8,7 @@ from ai.tools import ShowBGPTools, ShowConfigurationTools, ConfigureDeviceTools,
 from ai.models import LLMResponse
 
 import argparse
+import time
 
 class Agent:
     def __init__(self):
@@ -37,8 +38,6 @@ class Agent:
         """
         tool_description = render_text_description(self.tools)
 
-        # print("Alert Description: ", alert_description)
-
         prompt_template: PromptTemplate = PromptTemplate(
         template=self.template,
         input_variables=self.input_variables,
@@ -57,11 +56,14 @@ class Agent:
             max_iterations=10
         )
 
-        alert_description += " Use provided tools to figure out (A) what the issue is (B) check running configuration to verfiy (C) the configuration needed for the fix (D) implement the fix using the configuration tool."
-        
         print(alert_description)
+        alert_description += " Use provided tools to figure out (A) what the issue is (B) check running configuration to verfiy (C) the configuration needed for the fix (D) implement the fix using the configuration tool."
 
+        start_time = time.time()
         response: LLMResponse = self._llm_invoke(agent_executor, alert_description)
+        end_time = time.time()
+        elapsed_time = end_time - start_time
+        print(f"Elapsed time: {elapsed_time:.2f} seconds")
 
         return LLMResponse(input=response["input"], agent_scratchpad=response["agent_scratchpad"], output=response["output"])
 
