@@ -4,30 +4,38 @@ from agent.ai_agent import Agent
 
 from datetime import datetime
 
-
 api = FastAPI()
 agent = Agent()
 script_running = 0
 start_time = datetime.now()
 
-@api.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
 @api.post("/llm")
 def llm(question: APILLMQuery):
+    """
+    This is just a basic API endpoint that will be used to test the LLM.
+
+    arg:
+        question: APILLLMQuery: The question that will be sent to the llm
+    return:
+        dict: The response that will be sent to Grafana
+    """
     llm_question = LLMQuery(question=question.question)
     response = agent.alert(alert_description=llm_question)
     return response
 
 @api.post("/alert")
 async def alerts(payload: GrafanaMessage):
+    """
+    This is the webhook callback that will be called by Grafana when an alert is triggered.
+
+    arg:
+        payload: GrafanaMessage: The payload that will be sent by Grafana
+
+    return:
+        dict: The response that will be sent to Grafana
+    """
     global script_running 
     global start_time
-
-    # Change between BGP issue and OSPF issue. Need to figure out why OSPF alerts when there is no data / suppress it.
-    # Need to figure out why BGP alerts have two instances for the same alert.
 
     if payload.status == "firing":
         if script_running == 0: 

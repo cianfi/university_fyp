@@ -25,7 +25,16 @@ class Agent:
         self.input_variables = ['input', 'agent_scratchpad'],
         self.llm = local_llm()
 
-    def alert(self, alert_description: str):
+    def alert(self, alert_description: str) -> LLMResponse:
+        """
+        This is the function that will start the whole AI Agent process.
+        
+        arg:
+            alert_description: str: The alert description that will be sent to the llm
+
+        return:
+            LLMResponse: The response from the llm
+        """
         tool_description = render_text_description(self.tools)
 
         # print("Alert Description: ", alert_description)
@@ -56,8 +65,17 @@ class Agent:
 
         return LLMResponse(input=response["input"], agent_scratchpad=response["agent_scratchpad"], output=response["output"])
 
-    def _llm_invoke(self, agent_executor: AgentExecutor, llm_message: str):
-        """This is the function that will send the message to the llm"""
+    def _llm_invoke(self, agent_executor: AgentExecutor, llm_message: str) -> AgentExecutor:
+        """
+        This is the function that will send the message to the llm
+        
+        arg:
+            agent_executor: AgentExecutor: The agent executor that will be used to send the message to the llm
+            llm_message: str: The message that will be sent to the llm
+            
+        return:
+            LLMResponse: The response from the llm
+        """
         return agent_executor.invoke(
             {
                 "input": f"{llm_message}",

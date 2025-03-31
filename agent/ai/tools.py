@@ -142,6 +142,16 @@ class ConfigureDeviceTools():
     
     
 def show(device: str, command: str) -> dict:
+    """
+    This function is used to run a show command on the network device using PyATS.
+
+    Args:
+        device (str): The name of the network device.
+        command (str): The command to run on the device.
+
+    Returns:
+        dict: The output from the device.
+    """
     testbed = loader.load("testbed.yaml")
 
     device = testbed.devices[device]
@@ -153,6 +163,15 @@ def show(device: str, command: str) -> dict:
     return json.loads(json.dumps(parsed_output, indent=4))
 
 def configure(configuration: dict) -> dict:
+    """
+    This function is used to configure a network device using PyATS.
+
+    Args:
+        configuration (dict): The configuration to apply to the device.
+        
+    Returns:
+        dict: The status of the configuration.
+    """
     testbed = loader.load("testbed.yaml")
     for k,v in configuration.items():
         device = testbed.devices[k]

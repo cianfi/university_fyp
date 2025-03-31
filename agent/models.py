@@ -8,10 +8,6 @@ class LLMQuery():
 class APILLMQuery(BaseModel):
     question: str
 
-class PostTest(BaseModel):
-    user: str
-    age: int
-
 class AlertAnnotations(BaseModel):
     summary: str
 
