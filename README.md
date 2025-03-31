@@ -21,7 +21,6 @@ All the documentation will be put into the documents folder. Here is a brief exp
 - For more information on the architecture of this project, look at ["architecture.md"](./documents/architecture.md)
 - To see the network configuration used for this project, look at ["network_config.md"](./documents/network_config.md)
 - To see a drawio diagram of the new architecture, look at ["architecture.md"](./documents/architecture.drawio)
-- To see a drawio diagram of the old architecture, look at ["old_architecture.md"](./documents/old_architecture.drawio)
 
 
 ## How to use
