@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="7ClO2gzEByUyAXzy6tJs" name="Page-1">
-        <mxGraphModel dx="2029" dy="1690" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="2617" dy="2426" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -62,13 +62,13 @@
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="28" value="AI &lt;font color=&quot;#000000&quot;&gt;Framework&lt;/font&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1F1F1F;fillColor=#FFFFFF;" parent="1" vertex="1">
-                    <mxGeometry x="460" y="235" width="120" height="120" as="geometry"/>
+                    <mxGeometry x="707" y="235" width="120" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="33" style="edgeStyle=none;html=1;exitX=0;exitY=0.75;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#0A0A0A;" parent="1" source="30" target="28" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="30" value="&lt;font color=&quot;#000000&quot;&gt;LLM&lt;/font&gt;" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1F1F1F;fillColor=#FFFFFF;" parent="1" vertex="1">
-                    <mxGeometry x="707" y="235" width="120" height="120" as="geometry"/>
+                    <mxGeometry x="970" y="235" width="120" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="40" value="&lt;u&gt;&lt;b&gt;DIAGRAM LEGEND&lt;/b&gt;&lt;/u&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="-200" y="280" width="190" height="30" as="geometry"/>
@@ -118,22 +118,16 @@
                 <mxCell id="53" value="Link" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="110" y="-167" width="60" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="57" value="POST REQUEST" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
-                    <mxGeometry x="590" y="230" width="100" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="58" value="(LLM) RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
-                    <mxGeometry x="590" y="325" width="110" height="30" as="geometry"/>
-                </mxCell>
                 <mxCell id="59" value="SEND COMMAND" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="269" y="205" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="60" value="(COMMAND) RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
+                <mxCell id="60" value="COMMAND RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="269" y="235" width="150" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="61" value="SEND COMMAND" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="274" y="290" width="140" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="62" value="(COMMAND) RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
+                <mxCell id="62" value="COMMAND RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="274" y="320" width="160" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="65" style="edgeStyle=none;html=1;strokeColor=#6666FF;" parent="1" edge="1">
@@ -201,7 +195,7 @@
                 <mxCell id="90" value="GET&lt;div&gt;RESPONSE&lt;/div&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" parent="1" vertex="1">
                     <mxGeometry x="810" y="-167" width="70" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="98" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="91" target="30" edge="1">
+                <mxCell id="104" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="91" target="28">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="91" value="API&amp;nbsp;" style="whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#1F1F1F;fillColor=#FFFFFF;" parent="1" vertex="1">
@@ -222,8 +216,14 @@
                 <mxCell id="101" value="API TRIGGERS LLM TO START PROCESS" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="780" y="190" width="250" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="103" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                <mxCell id="103" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&lt;br&gt;&lt;/h1&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="890" y="-120" width="330" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="105" value="POST REQUEST" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" vertex="1" parent="1">
+                    <mxGeometry x="827" y="230" width="150" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="106" value="POST RESPONSE" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontColor=#050505;" vertex="1" parent="1">
+                    <mxGeometry x="827" y="290" width="150" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
