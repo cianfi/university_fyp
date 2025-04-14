@@ -3,8 +3,8 @@ from langchain.agents import AgentExecutor, create_react_agent
 from langchain.prompts import PromptTemplate
 
 from ai.llm import local_llm
-from ai.prompt import promt_template
-from ai.tools import ShowBGPTools, ShowConfigurationTools, ConfigureDeviceTools, ShowInterfaceTools
+from ai.prompt import prompt_template
+from ai.tools import ShowBGPTools, ShowConfigurationTools, ConfigureDeviceTools, ShowInterfaceTools, ShowOSPFTools
 from ai.models import LLMResponse
 
 import argparse
@@ -19,10 +19,14 @@ class Agent:
             ShowConfigurationTools.show_run,
             ConfigureDeviceTools.configuration,
             ShowInterfaceTools.show_ip_interface,
-            ShowInterfaceTools.show_ip_interface_brief
+            ShowInterfaceTools.show_ip_interface_brief,
+            ShowOSPFTools.show_ip_ospf,
+            ShowOSPFTools.show_ip_ospf_neighbors,
+            ShowOSPFTools.show_ip_ospf_database,
+            ShowOSPFTools.show_ip_ospf_interface,
         ]
 
-        self.template = promt_template
+        self.prompt = prompt_template
         self.input_variables = ['input', 'agent_scratchpad'],
         self.llm = local_llm()
 
@@ -39,7 +43,7 @@ class Agent:
         tool_description = render_text_description(self.tools)
 
         prompt_template: PromptTemplate = PromptTemplate(
-        template=self.template,
+        template=self.prompt,
         input_variables=self.input_variables,
         partial_variables={
             "tools": tool_description,
@@ -53,7 +57,7 @@ class Agent:
             tools=self.tools,
             handle_parsing_errors=True,
             verbose=True,
-            max_iterations=10
+            max_iterations=10,
         )
 
         print(alert_description)

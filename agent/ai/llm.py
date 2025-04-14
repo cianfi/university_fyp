@@ -1,6 +1,6 @@
 from langchain_ollama import ChatOllama
 
-def local_llm(model:str="qwen2.5:14b", base_url:str="http://127.0.0.1:11434") -> ChatOllama:
+def local_llm(model:str="qwen2.5-coder:14b", base_url:str="http://127.0.0.1:11434") -> ChatOllama:
     """
     This is the LLM configured to use Ollama locally.
     This returns OllamaLLM()

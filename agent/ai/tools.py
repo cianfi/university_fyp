@@ -67,6 +67,45 @@ class ShowOSPFTools():
         """
         return show(device, "show ip ospf")
     
+    @tool
+    def show_ip_ospf_neighbors(device: str) -> str:
+        """
+        This function is used to run the 'show bgp neighbors' command which will show all
+        the BGP neighbors connected to the given network device. This is useful to see 
+        statisitical data between the choosen device and its BGP neighbors.
+
+        Args:
+            device (str): The name address of the network device. 
+        
+        Returns:
+            str: The output from the device.
+        """
+        return show(device, "show ip ospf neighbor")
+    
+    @tool
+    def show_ip_ospf_database(device: str) -> str:
+        """
+        This function is used to run the 'show ip ospf database'
+        command which will show the OSPF database on the given network device.
+        Args:
+            device (str): The name of the network device.
+        Returns:
+            str: The output from the device.
+        """ 
+        return show(device, "show ip ospf database")
+    
+    @tool
+    def show_ip_ospf_interface(device: str) -> str:
+        """
+        This function is used to run the 'show ip ospf interface'
+        command which will show the OSPF interface on the given network device.
+        Args:
+            device (str): The name of the network device.
+        Returns:
+            str: The output from the device.
+        """
+        return show(device, "show ip ospf interface")
+            
 class ShowInterfaceTools():
     @tool
     def show_ip_interface_brief(device: str) -> dict:
@@ -152,15 +191,26 @@ def show(device: str, command: str) -> dict:
     Returns:
         dict: The output from the device.
     """
-    testbed = loader.load("testbed.yaml")
+    if not device or not command: 
+        return {"status": "failed", "error": "Device or command is not specified."}
+    try: 
+        testbed = loader.load("./agent/ai/testbed.yaml")
 
-    device = testbed.devices[device]
-    device.connect()
+        device = testbed.devices[device]
+        device.connect()
+    except:
+        return {"status": "failed", "error": f"Device {device} not found in testbed."}
 
-    parsed_output = device.parse(command)
-    device.disconnect()
+    try:
+        parsed_output = device.parse(command)
+        return json.loads(json.dumps(parsed_output, indent=4))
+    except:
+        return {"status": "failed", "error": f"No data returned for command: {command}"}
+    finally:
+        device.disconnect()
+    
 
-    return json.loads(json.dumps(parsed_output, indent=4))
+
 
 def configure(configuration: dict) -> dict:
     """
@@ -172,15 +222,20 @@ def configure(configuration: dict) -> dict:
     Returns:
         dict: The status of the configuration.
     """
-    testbed = loader.load("testbed.yaml")
+    if not isinstance(configuration, dict):
+        return({"status": "failed", "error": "Configuration is not a dictionary."})
+    
+    testbed = loader.load("./agent/ai/testbed.yaml")
     for k,v in configuration.items():
         device = testbed.devices[k]
         device.connect()
         v.replace("\r", "")
         try:
             device.configure(v)
-            device.disconnect()
         except Exception as e:
             return {"status": "failed", "error": str(e)}
+        finally:
+            device.disconnect()
+    
 
     return {"status": "success"}

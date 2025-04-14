@@ -497,10 +497,10 @@ def main():
 
     # Check if the script is running in a container or locally.
     # If running in a container, run all the filters. If running locally, run the filter specified in the command line.
-    if args[0] == "container":
+    if args.env == "container":
         script.container()
         logging.info(f"Done script. Waiting 10 seconds.")
-    elif args[0] == "local":
+    elif args.env == "local":
         script.local()
         logging.info(f"Done '{args.filter}'. Waiting 10 seconds.")
 

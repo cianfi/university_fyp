@@ -26,6 +26,12 @@ All the documentation will be put into the documents folder. Here is a brief exp
 ## How to use
 For this project, you will need to do the following steps.
 
+My Laptop is:
+- Type - MacBook Air
+- Chip - Apple M3
+- Memory - 24GB
+- MacOS - Sequoia 15.1
+
 If you just want to use the AI part of it with your chosen LLM, use the following commands:
 ```bash
 python3 agent/ai_agent.py --question "What is the time?"
