@@ -59,8 +59,7 @@ class Agent:
             verbose=True,
             max_iterations=10,
         )
-
-        print(alert_description)
+        
         alert_description += " Use provided tools to figure out (A) what the issue is (B) check running configuration to verfiy (C) the configuration needed for the fix (D) implement the fix using the configuration tool."
 
         start_time = time.time()

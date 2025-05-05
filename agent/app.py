@@ -48,8 +48,5 @@ async def alerts(payload: GrafanaMessage):
 
     elif payload.status == "resolved":
         script_running = 0
-        time_taken = datetime.now() - start_time
-        minuutes, seconds = divmod(time_taken.seconds, 60)
-        print(f"[{script_running}] Alert resolved. Time taken: {minuutes} min(s) {seconds} sec(s)")
         return {"message": "Alert resolved."}
         
